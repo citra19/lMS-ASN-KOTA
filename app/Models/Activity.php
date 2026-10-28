@@ -1,0 +1,134 @@
+<?php
+
+namespace App\Models;
+
+use Database\Factories\ActivityFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Activity extends Model
+{
+    /** @use HasFactory<ActivityFactory> */
+    use HasFactory;
+
+    protected $fillable = [
+        'title',
+        'slug',
+        'theme',
+        'speaker_name',
+        'speaker_title',
+        'date',
+        'start_time',
+        'end_time',
+        'description',
+        'banner_image',
+        'youtube_url',
+        'zoom_url',
+        'zoom_meeting_id',
+        'zoom_passcode',
+        'pretest_url',
+        'virtual_background',
+        'google_form_url',
+        'material_url',
+        'material_file',
+        'certificate_url',
+        'is_published',
+        'status',
+        'views_count',
+    ];
+
+    protected $casts = [
+        'date' => 'date',
+        'is_published' => 'boolean',
+        'views_count' => 'integer',
+    ];
+
+    /**
+     * Scope for published activities
+     */
+    public function scopePublished($query)
+    {
+        return $query->where('is_published', true);
+    }
+
+    /**
+     * Scope for searching
+     */
+    public function scopeSearch($query, ?string $term)
+    {
+        if (! $term) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($term) {
+            $q->where('title', 'like', "%{$term}%")
+                ->orWhere('theme', 'like', "%{$term}%")
+                ->orWhere('speaker_name', 'like', "%{$term}%")
+                ->orWhere('description', 'like', "%{$term}%");
+        });
+    }
+
+    /**
+     * Get Indonesian day and date string (e.g. Rabu, 28 Oktober 2026)
+     */
+    public function getFormattedDateAttribute(): string
+    {
+        if (! $this->date) {
+            return '-';
+        }
+
+        $days = [
+            'Sunday' => 'Minggu',
+            'Monday' => 'Senin',
+            'Tuesday' => 'Selasa',
+            'Wednesday' => 'Rabu',
+            'Thursday' => 'Kamis',
+            'Friday' => 'Jumat',
+            'Saturday' => 'Sabtu',
+        ];
+
+        $months = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+        ];
+
+        $dayName = $days[$this->date->format('l')] ?? $this->date->format('l');
+        $monthName = $months[(int) $this->date->format('n')] ?? $this->date->format('F');
+
+        return "{$dayName}, {$this->date->format('d')} {$monthName} {$this->date->format('Y')}";
+    }
+
+    /**
+     * Get formatted time range (e.g. 09:00 - 12:00 WIB)
+     */
+    public function getFormattedTimeAttribute(): string
+    {
+        $start = $this->start_time ? substr((string) $this->start_time, 0, 5) : '09:00';
+        $end = $this->end_time ? substr((string) $this->end_time, 0, 5) : '12:00';
+
+        return "{$start} - {$end} WIB";
+    }
+
+    /**
+     * Human readable status badge label
+     */
+    public function getStatusLabelAttribute(): string
+    {
+        return match ($this->status) {
+            'ongoing' => 'Sedang Berlangsung',
+            'completed' => 'Selesai',
+            default => 'Akan Datang',
+        };
+    }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
+    public function certificates()
+    {
+        return $this->hasMany(Certificate::class);
+    }
+}
