@@ -19,6 +19,8 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        Activity::autoSyncStatuses();
+
         $totalActivities = Activity::count();
         $totalAsn = Asn::count();
         $totalAttendances = Attendance::count();
@@ -98,8 +100,10 @@ class DashboardController extends Controller
             'remedial' => max(0, $totalPostTests - $passedPostTests),
         ];
 
-        // Sesi yang sedang aktif / live
+        // Sesi Aktif Hari Ini, Sesi Hari Ini yang Baru Selesai, atau Sesi Mendatang
         $ongoingActivity = Activity::where('status', 'ongoing')->first();
+        $todayCompletedActivity = Activity::whereDate('date', today())->where('status', 'completed')->first();
+        $upcomingActivity = Activity::where('status', 'upcoming')->orderBy('date', 'asc')->first();
 
         // Daftar kegiatan terbaru
         $recentActivities = Activity::withCount(['attendances', 'certificates'])
@@ -156,6 +160,8 @@ class DashboardController extends Controller
             'chartPlatform',
             'chartPassing',
             'ongoingActivity',
+            'todayCompletedActivity',
+            'upcomingActivity',
             'recentActivities',
             'recentFeed'
         ));

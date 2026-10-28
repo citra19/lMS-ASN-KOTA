@@ -15,6 +15,8 @@ class ActivityController extends Controller
      */
     public function index(Request $request)
     {
+        Activity::autoSyncStatuses();
+
         $search = $request->query('q');
         $status = $request->query('status');
         $publish = $request->query('publish');

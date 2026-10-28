@@ -213,8 +213,18 @@
                         <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
                         SEDANG BERLANGSUNG HARI INI
                     </span>
-                @else
+                @elseif($todayCompletedActivity)
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                        <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                        SESI HARI INI TELAH SELESAI
+                    </span>
+                @elseif($upcomingActivity)
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                        <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        SESI BERIKUTNYA
+                    </span>
+                @else
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-500/20 text-slate-300 border border-slate-500/30">
                         AGENDA PEMBELAJARAN
                     </span>
                 @endif
@@ -256,22 +266,87 @@
                         </a>
                     @endif
                 </div>
+            @elseif($todayCompletedActivity)
+                <div class="mt-4">
+                    <h4 class="text-lg font-bold text-white leading-snug">{{ $todayCompletedActivity->title }}</h4>
+                    @if($todayCompletedActivity->theme)
+                        <p class="text-xs text-slate-300 mt-1 line-clamp-1">Tema: {{ $todayCompletedActivity->theme }}</p>
+                    @endif
+                </div>
+
+                <!-- Detail Narasumber & Waktu Selesai -->
+                <div class="mt-4 p-3.5 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-10 h-10 rounded-full bg-emerald-600/30 text-emerald-300 flex items-center justify-center font-bold text-sm shrink-0 border border-emerald-400/20">
+                            {{ strtoupper(substr($todayCompletedActivity->speaker_name ?? 'N', 0, 2)) }}
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-xs font-bold text-white truncate">{{ $todayCompletedActivity->speaker_name }}</div>
+                            <div class="text-[11px] text-slate-300 truncate">{{ $todayCompletedActivity->speaker_title ?? 'Narasumber' }}</div>
+                            <div class="text-[10px] text-emerald-400 mt-0.5">Pelaksanaan: {{ $todayCompletedActivity->formatted_time }} (Tuntas)</div>
+                        </div>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Selesai</span>
+                    </div>
+                </div>
+
+                <!-- Quick Action Post-Session -->
+                <div class="grid grid-cols-2 gap-2 mt-4">
+                    <a href="{{ route('admin.certificates.index', ['activity_id' => $todayCompletedActivity->id]) }}" class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-xs">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                        <span>Kelola Sertifikat</span>
+                    </a>
+                    <a href="{{ route('activities.show', $todayCompletedActivity->slug) }}" target="_blank" class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold border border-white/10 transition-all shadow-xs">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                        <span>Portal Halaman</span>
+                    </a>
+                </div>
+            @elseif($upcomingActivity)
+                <div class="mt-4">
+                    <h4 class="text-lg font-bold text-white leading-snug">{{ $upcomingActivity->title }}</h4>
+                    @if($upcomingActivity->theme)
+                        <p class="text-xs text-blue-300 mt-1 line-clamp-1">Tema: {{ $upcomingActivity->theme }}</p>
+                    @endif
+                </div>
+
+                <div class="mt-4 p-3.5 rounded-xl bg-white/5 border border-white/10 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-blue-600/30 text-blue-300 flex items-center justify-center font-bold text-sm shrink-0 border border-blue-400/20">
+                        {{ strtoupper(substr($upcomingActivity->speaker_name ?? 'N', 0, 2)) }}
+                    </div>
+                    <div class="min-w-0">
+                        <div class="text-xs font-bold text-white truncate">{{ $upcomingActivity->speaker_name }}</div>
+                        <div class="text-[11px] text-slate-300 truncate">{{ $upcomingActivity->formatted_date }}</div>
+                        <div class="text-[10px] text-blue-300 mt-0.5">Pukul: {{ $upcomingActivity->formatted_time }} WIB</div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <a href="{{ route('activities.show', $upcomingActivity->slug) }}" target="_blank" class="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-xs">
+                        <span>Pratinjau Informasi Agenda</span>
+                        <span>&rarr;</span>
+                    </a>
+                </div>
             @else
                 <div class="mt-6 text-center py-6">
                     <div class="w-12 h-12 rounded-full bg-white/10 text-slate-300 mx-auto flex items-center justify-center mb-3">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                     </div>
-                    <h4 class="font-bold text-white text-base">Tidak Ada Sesi Live Hari Ini</h4>
+                    <h4 class="font-bold text-white text-base">Tidak Ada Sesi Terjadwal</h4>
                     <p class="text-xs text-slate-400 mt-1 max-w-xs mx-auto">Sesi Rabu Belajar berikutnya terjadwal setiap hari Rabu pukul 09:00 WIB.</p>
                 </div>
             @endif
         </div>
 
         <div class="mt-5 pt-4 border-t border-white/10 flex items-center justify-between text-xs">
-            <span class="text-slate-400">Status Publikasi: <strong class="text-emerald-400">Aktif</strong></span>
+            <span class="text-slate-400">Jadwal Rutin: <strong class="text-blue-300">Setiap Rabu 09:00 WIB</strong></span>
             @if($ongoingActivity)
                 <a href="{{ route('activities.show', $ongoingActivity->slug) }}" target="_blank" class="text-blue-300 hover:text-white font-bold inline-flex items-center gap-1">
                     Halaman Peserta &rarr;
+                </a>
+            @elseif($todayCompletedActivity)
+                <a href="{{ route('activities.show', $todayCompletedActivity->slug) }}" target="_blank" class="text-emerald-300 hover:text-white font-bold inline-flex items-center gap-1">
+                    Arsip Sesi &rarr;
                 </a>
             @endif
         </div>

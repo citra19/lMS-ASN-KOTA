@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Database\Factories\ActivityFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -131,6 +132,38 @@ class Activity extends Model
             'completed' => 'Selesai',
             default => 'Akan Datang',
         };
+    }
+
+    /**
+     * Otomatis sinkronisasi status kegiatan berdasarkan jadwal dan waktu sekarang (WIB)
+     */
+    public static function autoSyncStatuses(): void
+    {
+        $activities = self::all();
+        $now = now();
+
+        foreach ($activities as $activity) {
+            if (! $activity->date) {
+                continue;
+            }
+
+            $dateStr = $activity->date->format('Y-m-d');
+            $startTime = $activity->start_time ? substr((string) $activity->start_time, 0, 8) : '09:00:00';
+            $endTime = $activity->end_time ? substr((string) $activity->end_time, 0, 8) : '12:00:00';
+
+            $startDateTime = Carbon::parse("{$dateStr} {$startTime}", config('app.timezone'));
+            $endDateTime = Carbon::parse("{$dateStr} {$endTime}", config('app.timezone'));
+
+            $newStatus = match (true) {
+                $now->greaterThan($endDateTime) => 'completed',
+                $now->between($startDateTime, $endDateTime) => 'ongoing',
+                default => 'upcoming',
+            };
+
+            if ($activity->status !== $newStatus) {
+                $activity->updateQuietly(['status' => $newStatus]);
+            }
+        }
     }
 
     public function attendances()
