@@ -8,7 +8,9 @@ use App\Models\Asn;
 use App\Models\Attendance;
 use App\Models\Certificate;
 use App\Models\Evaluation;
+use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class CertificateController extends Controller
 {
@@ -109,5 +111,75 @@ class CertificateController extends Controller
         $certificate->delete();
 
         return back()->with('success', 'E-Sertifikat berhasil dihapus.');
+    }
+
+    /**
+     * Update certificate template and settings for an activity directly
+     */
+    public function updateTemplate(Request $request)
+    {
+        $validated = $request->validate([
+            'activity_id' => ['required', 'exists:activities,id'],
+            'jp_hours' => ['required', 'integer', 'min:1', 'max:50'],
+            'passing_grade' => ['required', 'integer', 'min:10', 'max:100'],
+            'certificate_bg' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'remove_certificate_bg' => ['nullable', 'boolean'],
+        ]);
+
+        $activity = Activity::findOrFail($validated['activity_id']);
+
+        if ($request->boolean('remove_certificate_bg')) {
+            if ($activity->certificate_bg && Storage::disk('public')->exists($activity->certificate_bg)) {
+                Storage::disk('public')->delete($activity->certificate_bg);
+            }
+            $activity->certificate_bg = null;
+        } elseif ($request->hasFile('certificate_bg')) {
+            if ($activity->certificate_bg && Storage::disk('public')->exists($activity->certificate_bg)) {
+                Storage::disk('public')->delete($activity->certificate_bg);
+            }
+            $activity->certificate_bg = $request->file('certificate_bg')->store('certificate_bgs', 'public');
+        }
+
+        $activity->jp_hours = $validated['jp_hours'];
+        $activity->passing_grade = $validated['passing_grade'];
+        $activity->save();
+
+        return back()->with('success', "Pengaturan template E-Sertifikat untuk kegiatan '{$activity->title}' berhasil disimpan.");
+    }
+
+    /**
+     * Preview certificate template for a specific activity
+     */
+    public function previewTemplate(int $activityId)
+    {
+        $activity = Activity::findOrFail($activityId);
+
+        $certificate = new Certificate([
+            'certificate_number' => 'BKPSDM-RB/'.now()->format('Y').'/'.sprintf('%03d', $activity->id).'/00001',
+            'issued_at' => now(),
+        ]);
+        $certificate->id = 0;
+        $certificate->setRelation('activity', $activity);
+
+        $dummyAsn = new Asn([
+            'name' => 'Dr. H. AHMAD FAUZI, S.STP., M.Si',
+            'nip' => '198205142001121002',
+            'opd' => 'Badan Kepegawaian dan Pengembangan Sumber Daya Manusia',
+            'rank_group' => 'Pembina (IV/a)',
+            'position' => 'Kepala Bidang Pengembangan Karir',
+        ]);
+        $certificate->setRelation('asn', $dummyAsn);
+
+        $signer = [
+            'name' => Setting::get('head_officer_name', 'TARMIZI ISMAIL, S.Sos., M.Si'),
+            'nip' => Setting::get('head_officer_nip', '196803031989021003'),
+            'title' => Setting::get('head_officer_title', 'Plt. Kepala BKPSDM Kota Padang'),
+            'agency' => Setting::get('agency_name', 'Badan Kepegawaian dan Pengembangan Sumber Daya Manusia Kota Padang'),
+        ];
+
+        $verifyUrl = route('certificates.verify', $certificate->certificate_number);
+        $qrCodeUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data='.urlencode($verifyUrl);
+
+        return view('public.certificates.show', compact('certificate', 'signer', 'verifyUrl', 'qrCodeUrl'));
     }
 }

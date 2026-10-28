@@ -36,55 +36,102 @@
         </div>
     </div>
 
-    <!-- Dua Kartu Utama: 1. Kelola Desain/Template & 2. Penerbitan Massal -->
+    <!-- Dua Kartu Utama: 1. Kelola Desain/Template Langsung per Kegiatan & 2. Penerbitan Massal -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <!-- Kartu 1: Dimana Mengelola Template Sertifikat -->
-        <div class="lg:col-span-5 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4 flex flex-col justify-between">
-            <div class="space-y-3">
-                <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+        <!-- Kartu 1: Kelola Desain & Template Sertifikat Langsung di Sini -->
+        <div class="lg:col-span-6 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2">
                     <span class="w-2 h-4 rounded bg-amber-500"></span>
-                    <h3 class="text-sm font-bold text-slate-900">Pengelolaan Template & Desain Sertifikat</h3>
+                    <h3 class="text-sm font-bold text-slate-900">Kelola Template & Desain Sertifikat</h3>
                 </div>
-                <p class="text-xs text-slate-500 leading-relaxed">
-                    Template E-Sertifikat baku Pemko Padang (A4 Landscape, Kop resmi, QR Code keaslian, dan cap TTE) sudah terpasang otomatis. Anda dapat menyesuaikannya melalui:
-                </p>
-                <div class="space-y-2.5 pt-1">
-                    <a href="{{ route('admin.activities.index') }}" class="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-amber-50/60 border border-slate-200/80 transition-all group">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-xs">
-                                🎨
-                            </div>
-                            <div>
-                                <div class="text-xs font-bold text-slate-800 group-hover:text-amber-900">Background Kustom per Kegiatan</div>
-                                <div class="text-[11px] text-slate-400">Edit Kegiatan &rarr; Bagian 3: Pengaturan E-Sertifikat</div>
-                            </div>
-                        </div>
-                        <svg class="w-4 h-4 text-slate-400 group-hover:text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                    </a>
-
-                    <a href="{{ route('admin.settings.index') }}" class="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-blue-50/60 border border-slate-200/80 transition-all group">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold text-xs">
-                                ✍️
-                            </div>
-                            <div>
-                                <div class="text-xs font-bold text-slate-800 group-hover:text-blue-900">Pejabat Penandatangan & TTE</div>
-                                <div class="text-[11px] text-slate-400">Pengaturan Website &rarr; Nama, NIP & Jabatan Pimpinan</div>
-                            </div>
-                        </div>
-                        <svg class="w-4 h-4 text-slate-400 group-hover:text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                    </a>
-                </div>
+                <a href="{{ route('admin.settings.index') }}" class="text-[11px] font-bold text-blue-700 hover:text-blue-800 flex items-center gap-1">
+                    <span>Atur TTE & Pimpinan &rarr;</span>
+                </a>
             </div>
 
-            <div class="pt-2 text-[11px] text-slate-400 italic">
-                Format nomor sertifikat dibuat otomatis sistem (contoh: <code class="text-blue-600 font-mono font-bold">BKPSDM-RB/2026/001/00025</code>).
-            </div>
+            <form action="{{ route('admin.certificates.update-template') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                @csrf
+                
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                        Pilih Sesi Kegiatan yang Ingin Diatur Templatnya <span class="text-rose-500">*</span>
+                    </label>
+                    <select id="template_activity_id" name="activity_id" required onchange="onActivityTemplateSelect(this)" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium">
+                        <option value="">-- Pilih Sesi Kegiatan --</option>
+                        @foreach($activities as $act)
+                            <option value="{{ $act->id }}" 
+                                    data-jp="{{ $act->jp_hours ?? 3 }}" 
+                                    data-passing="{{ $act->passing_grade ?? 70 }}" 
+                                    data-bg="{{ $act->certificate_bg ? asset('storage/'.$act->certificate_bg) : '' }}"
+                                    data-preview-url="{{ route('admin.certificates.preview-template', $act->id) }}">
+                                {{ $act->title }} ({{ $act->formatted_date }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Template Settings Detail Box -->
+                <div id="template_detail_box" class="space-y-3.5 pt-1">
+                    <!-- Status Template Aktif -->
+                    <div id="template_status_official" class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-2.5 text-xs text-slate-700">
+                        <span class="text-base">🏛️</span>
+                        <div>
+                            <span class="font-bold text-slate-800">Template Aktif:</span> Template Resmi Baku Pemko Padang (A4 Landscape, Gold & Navy dengan Kop BKPSDM)
+                        </div>
+                    </div>
+
+                    <div id="template_status_custom" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-between gap-3 text-xs">
+                        <div class="flex items-center gap-3">
+                            <img id="template_custom_preview" src="" alt="Background" class="w-16 h-11 object-cover rounded-md border border-amber-300 shadow-xs">
+                            <div>
+                                <div class="font-bold text-amber-950">Background Kustom Aktif</div>
+                                <div class="text-[11px] text-amber-800">Kegiatan ini menggunakan desain blanko/latar khusus</div>
+                            </div>
+                        </div>
+                        <label class="inline-flex items-center gap-1.5 text-xs text-rose-600 hover:text-rose-800 cursor-pointer font-bold">
+                            <input type="checkbox" name="remove_certificate_bg" id="remove_bg_checkbox" value="1" class="w-3.5 h-3.5 rounded text-rose-600 focus:ring-rose-500 border-slate-300">
+                            <span>Hapus (Gunakan Bawaan)</span>
+                        </label>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">Beban Jam Pelajaran (JP)</label>
+                            <div class="relative">
+                                <input type="number" id="template_jp_hours" name="jp_hours" min="1" max="50" value="3" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-mono">
+                                <span class="absolute right-3 top-2 text-[11px] text-slate-400 font-bold">JP</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">KKM Kelulusan</label>
+                            <div class="relative">
+                                <input type="number" id="template_passing_grade" name="passing_grade" min="10" max="100" value="70" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-mono">
+                                <span class="absolute right-3 top-2 text-[11px] text-slate-400 font-bold">/ 100</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">Ganti / Unggah Background Kustom (A4 Landscape, JPG/PNG, maks 5MB)</label>
+                        <input type="file" name="certificate_bg" accept="image/jpeg,image/png,image/webp" class="w-full text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-900 hover:file:bg-amber-200">
+                    </div>
+
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+                        <a id="btn_preview_template" href="#" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors">
+                            <span>👁️ Pratinjau Desain Sertifikat</span>
+                        </a>
+                        <button type="submit" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md transition-all">
+                            💾 Simpan Template Kegiatan
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
 
         <!-- Kartu 2: Penerbitan Massal Sekaligus (Batch Generate) -->
-        <div class="lg:col-span-7 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4 flex flex-col justify-between">
+        <div class="lg:col-span-6 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4 flex flex-col justify-between">
             <div class="space-y-3">
                 <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
                     <span class="w-2 h-4 rounded bg-blue-600"></span>
@@ -230,5 +277,51 @@
         </div>
     </div>
 </div>
+
+<script>
+function onActivityTemplateSelect(select) {
+    const selected = select.options[select.selectedIndex];
+    if (!selected || !selected.value) {
+        return;
+    }
+
+    const jp = selected.getAttribute('data-jp') || 3;
+    const passing = selected.getAttribute('data-passing') || 70;
+    const bg = selected.getAttribute('data-bg') || '';
+    const previewUrl = selected.getAttribute('data-preview-url') || '#';
+
+    document.getElementById('template_jp_hours').value = jp;
+    document.getElementById('template_passing_grade').value = passing;
+    document.getElementById('btn_preview_template').href = previewUrl;
+
+    const officialBox = document.getElementById('template_status_official');
+    const customBox = document.getElementById('template_status_custom');
+    const customPreview = document.getElementById('template_custom_preview');
+    const removeBgCheckbox = document.getElementById('remove_bg_checkbox');
+
+    if (removeBgCheckbox) {
+        removeBgCheckbox.checked = false;
+    }
+
+    if (bg) {
+        officialBox.classList.add('hidden');
+        customBox.classList.remove('hidden');
+        customPreview.src = bg;
+    } else {
+        officialBox.classList.remove('hidden');
+        customBox.classList.add('hidden');
+        customPreview.src = '';
+    }
+}
+
+// Auto-select first activity on page load so form is immediately filled
+document.addEventListener('DOMContentLoaded', function() {
+    const select = document.getElementById('template_activity_id');
+    if (select && select.options.length > 1 && !select.value) {
+        select.selectedIndex = 1;
+        onActivityTemplateSelect(select);
+    }
+});
+</script>
 @endsection
 

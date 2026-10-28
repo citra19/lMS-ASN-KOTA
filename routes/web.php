@@ -98,10 +98,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/presensi', [AdminAttendanceController::class, 'index'])->name('attendances.index');
         Route::get('/presensi/export', [AdminAttendanceController::class, 'export'])->name('attendances.export');
 
-        // Certificate Management (Penerbitan E-Sertifikat)
+        // Certificate Management (Penerbitan E-Sertifikat & Pengaturan Template)
         Route::get('/sertifikat', [AdminCertificateController::class, 'index'])->name('certificates.index');
         Route::post('/sertifikat', [AdminCertificateController::class, 'store'])->name('certificates.store');
         Route::post('/sertifikat/batch-issue', [AdminCertificateController::class, 'batchIssue'])->name('certificates.batch-issue');
+        Route::post('/sertifikat/update-template', [AdminCertificateController::class, 'updateTemplate'])->name('certificates.update-template');
+        Route::get('/sertifikat/preview-template/{activity}', [AdminCertificateController::class, 'previewTemplate'])->name('certificates.preview-template');
         Route::delete('/sertifikat/{certificate}', [AdminCertificateController::class, 'destroy'])->name('certificates.destroy');
 
         // Website Settings
