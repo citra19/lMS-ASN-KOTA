@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Models\Asn;
+use App\Models\Attendance;
 use App\Models\Certificate;
+use App\Models\Evaluation;
 use Illuminate\Http\Request;
 
 class CertificateController extends Controller
@@ -42,7 +44,7 @@ class CertificateController extends Controller
     }
 
     /**
-     * Issue a new certificate
+     * Issue a single certificate manually (for emergency / manual override)
      */
     public function store(Request $request)
     {
@@ -55,7 +57,48 @@ class CertificateController extends Controller
 
         Certificate::create($validated);
 
-        return back()->with('success', 'E-Sertifikat berhasil diterbitkan.');
+        return back()->with('success', 'E-Sertifikat berhasil diterbitkan secara manual.');
+    }
+
+    /**
+     * Issue certificates in batch for all qualified participants who completed all stages
+     */
+    public function batchIssue(Request $request)
+    {
+        $request->validate([
+            'activity_id' => ['required', 'exists:activities,id'],
+        ]);
+
+        $activity = Activity::findOrFail($request->activity_id);
+
+        // Find all ASNs who have completed: Attendance, Pre-Test, Passed Post-Test, and Evaluation
+        $qualifiedAsns = Asn::whereHas('attendances', fn ($q) => $q->where('activity_id', $activity->id))
+            ->whereHas('assessmentAttempts', fn ($q) => $q->where('activity_id', $activity->id)->where('type', 'pretest'))
+            ->whereHas('assessmentAttempts', fn ($q) => $q->where('activity_id', $activity->id)->where('type', 'posttest')->where('is_passed', true))
+            ->whereHas('evaluations', fn ($q) => $q->where('activity_id', $activity->id))
+            ->whereDoesntHave('certificates', fn ($q) => $q->where('activity_id', $activity->id))
+            ->get();
+
+        if ($qualifiedAsns->isEmpty()) {
+            return back()->with('info', "Semua peserta yang telah lulus pada kegiatan '{$activity->title}' sudah memiliki sertifikat, atau belum ada peserta baru yang memenuhi seluruh syarat kelulusan.");
+        }
+
+        $issuedCount = 0;
+        foreach ($qualifiedAsns as $asn) {
+            $count = Certificate::where('activity_id', $activity->id)->count() + 1;
+            $certNumber = sprintf('BKPSDM-RB/%s/%03d/%05d', now()->format('Y'), $activity->id, $count);
+
+            Certificate::create([
+                'asn_id' => $asn->id,
+                'activity_id' => $activity->id,
+                'certificate_number' => $certNumber,
+                'issued_at' => now(),
+            ]);
+
+            $issuedCount++;
+        }
+
+        return back()->with('success', "Berhasil menerbitkan {$issuedCount} E-Sertifikat secara massal untuk seluruh peserta yang lulus pada kegiatan '{$activity->title}'.");
     }
 
     /**

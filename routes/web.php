@@ -101,6 +101,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Certificate Management (Penerbitan E-Sertifikat)
         Route::get('/sertifikat', [AdminCertificateController::class, 'index'])->name('certificates.index');
         Route::post('/sertifikat', [AdminCertificateController::class, 'store'])->name('certificates.store');
+        Route::post('/sertifikat/batch-issue', [AdminCertificateController::class, 'batchIssue'])->name('certificates.batch-issue');
         Route::delete('/sertifikat/{certificate}', [AdminCertificateController::class, 'destroy'])->name('certificates.destroy');
 
         // Website Settings
