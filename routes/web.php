@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ParticipantController as AdminParticipantControll
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\AsnAuthController;
 use App\Http\Controllers\AssessmentController;
+use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\KeycloakController;
 use Illuminate\Support\Facades\Route;
 
@@ -62,6 +63,10 @@ Route::post('/logout', [AsnAuthController::class, 'logout'])->name('logout');
 
 // My Certificates & History (ASN Portfolio)
 Route::get('/sertifikat-saya', [ActivityController::class, 'myCertificates'])->name('my.certificates');
+Route::get('/sertifikat/{id}', [CertificateController::class, 'show'])->name('certificates.show');
+Route::get('/verifikasi-sertifikat/{number}', [CertificateController::class, 'verify'])
+    ->name('certificates.verify')
+    ->where('number', '.*');
 
 /*
 |--------------------------------------------------------------------------

@@ -70,8 +70,11 @@ class ActivityController extends Controller
             'certificate_url' => ['nullable', 'url', 'max:500'],
             'status' => ['required', 'in:upcoming,ongoing,completed'],
             'is_published' => ['nullable', 'boolean'],
+            'jp_hours' => ['nullable', 'integer', 'min:1', 'max:50'],
+            'passing_grade' => ['nullable', 'integer', 'min:10', 'max:100'],
             'banner_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:3072'],
             'virtual_background' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'certificate_bg' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
             'material_file' => ['nullable', 'file', 'mimes:pdf,ppt,pptx,zip,rar,doc,docx', 'max:20480'],
         ]);
 
@@ -84,6 +87,8 @@ class ActivityController extends Controller
         }
         $validated['slug'] = $slug;
         $validated['is_published'] = $request->boolean('is_published', true);
+        $validated['jp_hours'] = $validated['jp_hours'] ?? 3;
+        $validated['passing_grade'] = $validated['passing_grade'] ?? 70;
 
         // Upload files
         if ($request->hasFile('banner_image')) {
@@ -92,6 +97,10 @@ class ActivityController extends Controller
 
         if ($request->hasFile('virtual_background')) {
             $validated['virtual_background'] = $request->file('virtual_background')->store('virtual_backgrounds', 'public');
+        }
+
+        if ($request->hasFile('certificate_bg')) {
+            $validated['certificate_bg'] = $request->file('certificate_bg')->store('certificate_bgs', 'public');
         }
 
         if ($request->hasFile('material_file')) {
@@ -136,12 +145,18 @@ class ActivityController extends Controller
             'certificate_url' => ['nullable', 'url', 'max:500'],
             'status' => ['required', 'in:upcoming,ongoing,completed'],
             'is_published' => ['nullable', 'boolean'],
+            'jp_hours' => ['nullable', 'integer', 'min:1', 'max:50'],
+            'passing_grade' => ['nullable', 'integer', 'min:10', 'max:100'],
             'banner_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:3072'],
             'virtual_background' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'certificate_bg' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'remove_certificate_bg' => ['nullable', 'boolean'],
             'material_file' => ['nullable', 'file', 'mimes:pdf,ppt,pptx,zip,rar,doc,docx', 'max:20480'],
         ]);
 
         $validated['is_published'] = $request->boolean('is_published', true);
+        $validated['jp_hours'] = $validated['jp_hours'] ?? 3;
+        $validated['passing_grade'] = $validated['passing_grade'] ?? 70;
 
         // Update slug if title changed
         if ($validated['title'] !== $activity->title) {
@@ -168,6 +183,18 @@ class ActivityController extends Controller
                 Storage::disk('public')->delete($activity->virtual_background);
             }
             $validated['virtual_background'] = $request->file('virtual_background')->store('virtual_backgrounds', 'public');
+        }
+
+        if ($request->boolean('remove_certificate_bg')) {
+            if ($activity->certificate_bg && Storage::disk('public')->exists($activity->certificate_bg)) {
+                Storage::disk('public')->delete($activity->certificate_bg);
+            }
+            $validated['certificate_bg'] = null;
+        } elseif ($request->hasFile('certificate_bg')) {
+            if ($activity->certificate_bg && Storage::disk('public')->exists($activity->certificate_bg)) {
+                Storage::disk('public')->delete($activity->certificate_bg);
+            }
+            $validated['certificate_bg'] = $request->file('certificate_bg')->store('certificate_bgs', 'public');
         }
 
         if ($request->hasFile('material_file')) {

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Activity;
 use App\Models\Asn;
+use App\Models\Certificate;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -354,9 +355,20 @@ class LmsRabuBelajarTest extends TestCase
         $evalResponse->assertSessionHas('success');
 
         // Assert Certificate is automatically issued!
-        $this->assertDatabaseHas('certificates', [
-            'asn_id' => $asn->id,
-            'activity_id' => $activity->id,
-        ]);
+        $cert = Certificate::where('asn_id', $asn->id)->where('activity_id', $activity->id)->first();
+        $this->assertNotNull($cert);
+
+        // 5. Test viewing the printable certificate
+        $certResponse = $this->actingAs($asn, 'asn')->get(route('certificates.show', $cert->id));
+        $certResponse->assertStatus(200);
+        $certResponse->assertSee('SERTIFIKAT');
+        $certResponse->assertSee($cert->certificate_number);
+        $certResponse->assertSee(strtoupper($asn->name));
+
+        // 6. Test public QR verification page
+        $verifyResponse = $this->get(route('certificates.verify', $cert->certificate_number));
+        $verifyResponse->assertStatus(200);
+        $verifyResponse->assertSee('Dokumen Resmi Terverifikasi');
+        $verifyResponse->assertSee($asn->name);
     }
 }

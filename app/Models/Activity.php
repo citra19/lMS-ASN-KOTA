@@ -38,6 +38,8 @@ class Activity extends Model
         'exam_duration_minutes',
         'pretest_enabled',
         'posttest_enabled',
+        'jp_hours',
+        'certificate_bg',
         'views_count',
     ];
 
@@ -48,6 +50,7 @@ class Activity extends Model
         'exam_duration_minutes' => 'integer',
         'pretest_enabled' => 'boolean',
         'posttest_enabled' => 'boolean',
+        'jp_hours' => 'integer',
         'views_count' => 'integer',
     ];
 
