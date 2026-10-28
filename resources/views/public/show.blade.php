@@ -124,51 +124,10 @@
             </span>
         </div>
 
-        <!-- Grid 7 Kartu Layanan -->
+        <!-- Grid 7 Kartu Layanan Terpadu -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             
-            <!-- 1. Zoom Meeting (Paling Utama) -->
-            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:border-blue-300 hover:shadow-md transition-all flex flex-col justify-between group">
-                <div>
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-105 transition-transform">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                        </div>
-                        <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">Tatap Muka Daring</span>
-                    </div>
-
-                    <h3 class="text-base font-bold text-slate-900">2. Zoom Meeting</h3>
-                    <p class="text-xs text-slate-500 mt-1">Interaksi langsung tanya jawab narasumber & otomatis catat presensi.</p>
-
-                    <!-- Info Ringkas ID & Passcode -->
-                    <div class="mt-3 py-2 px-3 bg-slate-50 rounded-xl text-xs flex justify-between font-mono text-slate-600 border border-slate-100">
-                        <span>ID: <strong>{{ $activity->zoom_meeting_id ?? '883 4920 1928' }}</strong></span>
-                        <span>Pass: <strong>{{ $activity->zoom_passcode ?? 'RABU2026' }}</strong></span>
-                    </div>
-
-                    @if($hasAttended)
-                        <div class="mt-2 text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
-                            <svg class="w-3.5 h-3.5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                            <span>Presensi Anda telah tercatat</span>
-                        </div>
-                    @endif
-                </div>
-
-                <div class="mt-4 pt-3 border-t border-slate-100">
-                    @if($activity->zoom_url)
-                        <a href="{{ route('activities.access', [$activity->slug, 'zoom']) }}" target="_blank" class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition-all">
-                            <span>Masuk Zoom Meeting</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                        </a>
-                    @else
-                        <button disabled class="w-full py-2.5 px-4 rounded-xl bg-slate-100 text-slate-400 font-medium text-xs cursor-not-allowed">
-                            Tautan Zoom Belum Dibuka
-                        </button>
-                    @endif
-                </div>
-            </div>
-
-            <!-- 2. Live YouTube -->
+            <!-- 1. Live YouTube -->
             <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:border-rose-300 hover:shadow-md transition-all flex flex-col justify-between group">
                 <div>
                     <div class="flex items-center justify-between mb-3">
@@ -196,31 +155,73 @@
                 </div>
             </div>
 
-            <!-- 3. Pre-Test -->
+            <!-- 2. Zoom Meeting & Presensi -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:border-blue-300 hover:shadow-md transition-all flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                        </div>
+                        @if($hasAttended)
+                            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                                <svg class="w-3 h-3 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                <span>Presensi Tercatat</span>
+                            </span>
+                        @else
+                            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">Tatap Muka Daring</span>
+                        @endif
+                    </div>
+
+                    <h3 class="text-base font-bold text-slate-900">2. Zoom & Presensi</h3>
+                    <p class="text-xs text-slate-500 mt-1">Tatap muka interaktif dengan narasumber & catat presensi kehadiran Anda.</p>
+
+                    <div class="mt-3 py-2 px-3 bg-slate-50 rounded-xl text-xs flex justify-between font-mono text-slate-600 border border-slate-100">
+                        <span>ID: <strong>{{ $activity->zoom_meeting_id ?? '883 4920 1928' }}</strong></span>
+                        <span>Pass: <strong>{{ $activity->zoom_passcode ?? 'RABU2026' }}</strong></span>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2">
+                    @if($activity->zoom_url)
+                        <a href="{{ route('activities.access', [$activity->slug, 'zoom']) }}" target="_blank" class="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition-all">
+                            <span>Masuk Zoom</span>
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                        </a>
+                    @endif
+                    @if(! $hasAttended)
+                        <a href="{{ route('activities.presence', $activity->slug) }}" class="inline-flex items-center justify-center py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-all" title="Catat Presensi Mandiri">
+                            <span>Presensi</span>
+                        </a>
+                    @endif
+                </div>
+            </div>
+
+            <!-- 3. Pre-Test Mandiri (Native In-System CBT) -->
             <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:border-purple-300 hover:shadow-md transition-all flex flex-col justify-between group">
                 <div>
                     <div class="flex items-center justify-between mb-3">
                         <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center group-hover:scale-105 transition-transform">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
                         </div>
-                        <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700">Tahap Awal</span>
+                        @if($pretestAttempt)
+                            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                                <svg class="w-3 h-3 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                <span>Skor: {{ number_format($pretestAttempt->score, 0) }}</span>
+                            </span>
+                        @else
+                            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700">Tahap Awal</span>
+                        @endif
                     </div>
 
-                    <h3 class="text-base font-bold text-slate-900">3. Pre-Test</h3>
-                    <p class="text-xs text-slate-500 mt-1">Uji pemahaman awal sebelum pemaparan materi inti oleh narasumber.</p>
+                    <h3 class="text-base font-bold text-slate-900">3. Pre-Test Mandiri</h3>
+                    <p class="text-xs text-slate-500 mt-1">Uji diagnostik pemahaman awal langsung di sistem tanpa keluar portal.</p>
                 </div>
 
                 <div class="mt-4 pt-3 border-t border-slate-100">
-                    @if($activity->pretest_url)
-                        <a href="{{ route('activities.access', [$activity->slug, 'pretest']) }}" target="_blank" class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-xs transition-all">
-                            <span>Mulai Pre-Test</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                        </a>
-                    @else
-                        <button disabled class="w-full py-2.5 px-4 rounded-xl bg-slate-100 text-slate-400 font-medium text-xs cursor-not-allowed">
-                            Pre-Test Belum Dibuka
-                        </button>
-                    @endif
+                    <a href="{{ route('activities.pretest', $activity->slug) }}" class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl {{ $pretestAttempt ? 'bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200' : 'bg-purple-600 hover:bg-purple-700 text-white shadow-xs' }} font-bold text-xs transition-all">
+                        <span>{{ $pretestAttempt ? 'Lihat Hasil Pre-Test' : 'Mulai Pre-Test Mandiri' }}</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </a>
                 </div>
             </div>
 
@@ -241,12 +242,41 @@
                 <div class="mt-4 pt-3 border-t border-slate-100">
                     <a href="{{ route('activities.access', [$activity->slug, 'background']) }}" class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs shadow-xs transition-all">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                        <span>Unduh Virtual Background</span>
+                        <span>Unduh Background</span>
                     </a>
                 </div>
             </div>
 
-            <!-- 5. Bahan Pembelajaran -->
+            <!-- 5. Post-Test Mandiri (Native In-System CBT) -->
+            <div class="bg-white rounded-2xl p-5 border-2 {{ $posttestAttempt && $posttestAttempt->is_passed ? 'border-emerald-300' : 'border-indigo-200' }} shadow-xs hover:border-indigo-400 hover:shadow-md transition-all flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        @if($posttestAttempt && $posttestAttempt->is_passed)
+                            <span class="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 flex items-center gap-1">
+                                <svg class="w-3 h-3 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                <span>Lulus ({{ number_format($posttestAttempt->score, 0) }})</span>
+                            </span>
+                        @else
+                            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700">KKM {{ $activity->passing_grade ?? 70 }} Poin</span>
+                        @endif
+                    </div>
+
+                    <h3 class="text-base font-bold text-slate-900">5. Post-Test Mandiri</h3>
+                    <p class="text-xs text-slate-500 mt-1">Ujian evaluasi kompetensi akhir sesi dengan penilaian & KKM otomatis.</p>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-100">
+                    <a href="{{ route('activities.posttest', $activity->slug) }}" class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl {{ $posttestAttempt && $posttestAttempt->is_passed ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200' : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs' }} font-bold text-xs transition-all">
+                        <span>{{ $posttestAttempt && $posttestAttempt->is_passed ? 'Lihat Hasil Post-Test' : 'Mulai Post-Test Mandiri' }}</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 6. Bahan Pembelajaran -->
             <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:border-sky-300 hover:shadow-md transition-all flex flex-col justify-between group">
                 <div>
                     <div class="flex items-center justify-between mb-3">
@@ -274,55 +304,65 @@
                 </div>
             </div>
 
-            <!-- 6. Post-Test, Absensi & Evaluasi (Penting di Akhir Sesi) -->
-            <div class="bg-white rounded-2xl p-5 border-2 border-emerald-300 shadow-xs hover:border-emerald-500 hover:shadow-md transition-all flex flex-col justify-between group">
-                <div>
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-105 transition-transform">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        </div>
-                        <span class="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Form Terpadu 3-in-1</span>
-                    </div>
-
-                    <h3 class="text-base font-bold text-slate-900">5. Post-Test, Absensi & Evaluasi</h3>
-                    <p class="text-xs text-slate-500 mt-1">Satu tautan Google Form: identitas ASN, evaluasi sesi, dan presensi.</p>
-                </div>
-
-                <div class="mt-4 pt-3 border-t border-slate-100">
-                    @if($activity->google_form_url)
-                        <a href="{{ route('activities.access', [$activity->slug, 'evaluasi']) }}" target="_blank" class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-all">
-                            <span>Isi Formulir Evaluasi</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                        </a>
-                    @else
-                        <button disabled class="w-full py-2.5 px-4 rounded-xl bg-slate-100 text-slate-400 font-medium text-xs cursor-not-allowed">
-                            Dibuka Di Akhir Sesi
-                        </button>
-                    @endif
-                </div>
-            </div>
-
-            <!-- 7. E-Sertifikat Digital (Hasil Akhir) -->
-            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:border-indigo-300 hover:shadow-md transition-all flex flex-col justify-between group md:col-span-2 lg:col-span-3">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div class="flex items-center gap-3.5">
-                        <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>
+            <!-- 7. Evaluasi & E-Sertifikat Digital (Full Row Card) -->
+            <div class="bg-white rounded-2xl p-5 border-2 border-slate-200/90 shadow-sm hover:border-blue-400 hover:shadow-md transition-all flex flex-col justify-between group md:col-span-2 lg:col-span-3">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-xl {{ $myCertificate ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600' }} flex items-center justify-center shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.723 1.745 3.42 3.42 0 01-2.812 2.812 3.42 3.42 0 00-1.745.723 3.42 3.42 0 01-3.976 0 3.42 3.42 0 00-1.745-.723 3.42 3.42 0 01-2.812-2.812 3.42 3.42 0 00-.723-1.745 3.42 3.42 0 010-3.976 3.42 3.42 0 00.723-1.745 3.42 3.42 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" /></svg>
                         </div>
                         <div>
                             <div class="flex items-center gap-2">
-                                <h3 class="text-base font-bold text-slate-900">7. E-Sertifikat Digital</h3>
-                                <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700">Pengembangan Kompetensi</span>
+                                <h3 class="text-base font-bold text-slate-900">7. Evaluasi & E-Sertifikat Digital Otomatis</h3>
+                                @if($myCertificate)
+                                    <span class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Sertifikat Terbit!</span>
+                                @else
+                                    <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Terbit Otomatis</span>
+                                @endif
                             </div>
-                            <p class="text-xs text-slate-500 mt-0.5">Sertifikat resmi terbit setelah panitia BKPSDM selesai memvalidasi kehadiran dan evaluasi kegiatan.</p>
+                            
+                            @if($myCertificate)
+                                <p class="text-xs text-slate-600 mt-1">
+                                    Nomor Sertifikat: <strong class="font-mono text-blue-700">{{ $myCertificate->certificate_number }}</strong>. Telah terverifikasi resmi oleh BKPSDM Padang.
+                                </p>
+                            @else
+                                <div class="flex flex-wrap items-center gap-2 mt-2 text-[11px] font-medium text-slate-500">
+                                    <span class="inline-flex items-center gap-1 {{ $hasAttended ? 'text-emerald-700 font-bold' : '' }}">
+                                        <svg class="w-3.5 h-3.5 {{ $hasAttended ? 'text-emerald-600' : 'text-slate-300' }}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                        1. Presensi
+                                    </span>
+                                    <span>•</span>
+                                    <span class="inline-flex items-center gap-1 {{ $pretestAttempt ? 'text-emerald-700 font-bold' : '' }}">
+                                        <svg class="w-3.5 h-3.5 {{ $pretestAttempt ? 'text-emerald-600' : 'text-slate-300' }}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                        2. Pre-Test
+                                    </span>
+                                    <span>•</span>
+                                    <span class="inline-flex items-center gap-1 {{ $posttestAttempt && $posttestAttempt->is_passed ? 'text-emerald-700 font-bold' : '' }}">
+                                        <svg class="w-3.5 h-3.5 {{ $posttestAttempt && $posttestAttempt->is_passed ? 'text-emerald-600' : 'text-slate-300' }}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                        3. Post-Test
+                                    </span>
+                                    <span>•</span>
+                                    <span class="inline-flex items-center gap-1 {{ $hasEvaluated ? 'text-emerald-700 font-bold' : '' }}">
+                                        <svg class="w-3.5 h-3.5 {{ $hasEvaluated ? 'text-emerald-600' : 'text-slate-300' }}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                        4. Evaluasi
+                                    </span>
+                                </div>
+                            @endif
                         </div>
                     </div>
 
-                    <div class="shrink-0">
-                        <a href="{{ route('activities.access', [$activity->slug, 'sertifikat']) }}" class="inline-flex items-center justify-center gap-2 py-2.5 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-all">
-                            <span>Akses E-Sertifikat</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                        </a>
+                    <div class="flex items-center gap-2 shrink-0">
+                        @if($myCertificate)
+                            <a href="{{ route('my.certificates') }}" class="inline-flex items-center justify-center gap-2 py-2.5 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-all">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                <span>Unduh E-Sertifikat</span>
+                            </a>
+                        @else
+                            <a href="{{ route('activities.evaluation', $activity->slug) }}" class="inline-flex items-center justify-center gap-2 py-2.5 px-5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs shadow-xs transition-all">
+                                <span>{{ $hasEvaluated ? 'Lihat Evaluasi' : 'Isi Evaluasi Sesi' }}</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            </a>
+                        @endif
                     </div>
                 </div>
             </div>

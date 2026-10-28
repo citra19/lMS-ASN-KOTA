@@ -45,9 +45,10 @@ class DatabaseSeeder extends Seeder
             Setting::set($key, $value);
         }
 
-        // 3. Call Seeders (Activities only, ASNs are populated automatically via Keycloak SSO)
+        // 3. Call Seeders
         $this->call([
             ActivitySeeder::class,
+            QuestionSeeder::class,
         ]);
     }
 }

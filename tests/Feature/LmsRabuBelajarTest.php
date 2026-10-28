@@ -51,7 +51,7 @@ class LmsRabuBelajarTest extends TestCase
         $response->assertSee('Zoom Meeting');
         $response->assertSee('Pre-Test');
         $response->assertSee('Virtual Background');
-        $response->assertSee('Post-Test, Absensi', false);
+        $response->assertSee('Post-Test');
         $response->assertSee('Bahan Pembelajaran');
         $response->assertSee('E-Sertifikat');
     }
@@ -250,7 +250,7 @@ class LmsRabuBelajarTest extends TestCase
         }
     }
 
-    public function test_authenticated_asn_can_access_features_and_evaluasi_records_attendance(): void
+    public function test_authenticated_asn_can_access_evaluation(): void
     {
         $asn = Asn::create([
             'nip' => '198507152010011012',
@@ -259,15 +259,104 @@ class LmsRabuBelajarTest extends TestCase
             'position' => 'Pranata Komputer',
             'password' => Hash::make('password123'),
         ]);
-        $activity = Activity::whereNotNull('google_form_url')->first();
+        $activity = Activity::first();
 
         $response = $this->actingAs($asn, 'asn')->get(route('activities.access', [$activity->slug, 'evaluasi']));
 
-        $response->assertRedirect($activity->google_form_url);
+        $response->assertRedirect(route('activities.evaluation', $activity->slug));
+    }
+
+    public function test_asn_can_record_native_presence(): void
+    {
+        $asn = Asn::create([
+            'nip' => '198507152010011012',
+            'name' => 'Budi Setiawan',
+            'opd' => 'Diskominfo',
+            'position' => 'Pranata Komputer',
+            'password' => Hash::make('password123'),
+        ]);
+        $activity = Activity::first();
+
+        $response = $this->actingAs($asn, 'asn')->get(route('activities.presence', $activity->slug));
+
+        $response->assertRedirect(route('activities.show', $activity->slug));
+        $response->assertSessionHas('success');
         $this->assertDatabaseHas('attendances', [
             'asn_id' => $asn->id,
             'activity_id' => $activity->id,
-            'platform' => 'form_evaluasi',
+        ]);
+    }
+
+    public function test_asn_can_submit_pretest_and_see_results(): void
+    {
+        $asn = Asn::create([
+            'nip' => '198507152010011012',
+            'name' => 'Budi Setiawan',
+            'opd' => 'Diskominfo',
+            'position' => 'Pranata Komputer',
+            'password' => Hash::make('password123'),
+        ]);
+        $activity = Activity::first();
+        $question = $activity->pretestQuestions()->first();
+
+        $response = $this->actingAs($asn, 'asn')->post(route('activities.pretest.submit', $activity->slug), [
+            'answers' => [
+                $question->id => $question->correct_answer,
+            ],
+        ]);
+
+        $response->assertRedirect(route('activities.pretest', $activity->slug));
+        $this->assertDatabaseHas('assessment_attempts', [
+            'asn_id' => $asn->id,
+            'activity_id' => $activity->id,
+            'type' => 'pretest',
+        ]);
+    }
+
+    public function test_completing_all_four_steps_automatically_issues_certificate(): void
+    {
+        $asn = Asn::create([
+            'nip' => '198507152010011012',
+            'name' => 'Budi Setiawan',
+            'opd' => 'Diskominfo',
+            'position' => 'Pranata Komputer',
+            'password' => Hash::make('password123'),
+        ]);
+        $activity = Activity::first();
+        $questions = $activity->posttestQuestions;
+
+        // 1. Presensi
+        $this->actingAs($asn, 'asn')->get(route('activities.presence', $activity->slug));
+
+        // 2. Pre-Test
+        $this->actingAs($asn, 'asn')->post(route('activities.pretest.submit', $activity->slug), [
+            'answers' => [$questions->first()->id => $questions->first()->correct_answer],
+        ]);
+
+        // 3. Post-Test (Answer all correctly to score 100)
+        $answers = [];
+        foreach ($questions as $q) {
+            $answers[$q->id] = $q->correct_answer;
+        }
+        $this->actingAs($asn, 'asn')->post(route('activities.posttest.submit', $activity->slug), [
+            'answers' => $answers,
+        ]);
+
+        // 4. Evaluasi
+        $evalResponse = $this->actingAs($asn, 'asn')->post(route('activities.evaluation.submit', $activity->slug), [
+            'speaker_rating' => 5,
+            'material_rating' => 5,
+            'organizer_rating' => 5,
+            'feedback_text' => 'Materi sangat aplikatif dan bermanfaat bagi ASN!',
+        ]);
+
+        $evalResponse->assertRedirect(route('activities.show', $activity->slug));
+        $evalResponse->assertSessionHas('success');
+
+        // Assert Certificate is automatically issued!
+        $this->assertDatabaseHas('certificates', [
+            'asn_id' => $asn->id,
+            'activity_id' => $activity->id,
         ]);
     }
 }

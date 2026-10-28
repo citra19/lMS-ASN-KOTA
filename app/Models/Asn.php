@@ -49,4 +49,20 @@ class Asn extends Authenticatable
     {
         return $this->hasMany(Certificate::class);
     }
+
+    /**
+     * Relationship to assessment attempts (pretest & posttest)
+     */
+    public function assessmentAttempts()
+    {
+        return $this->hasMany(AssessmentAttempt::class);
+    }
+
+    /**
+     * Relationship to evaluations (umpan balik kegiatan)
+     */
+    public function evaluations()
+    {
+        return $this->hasMany(Evaluation::class);
+    }
 }

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Activity;
+use App\Models\AssessmentAttempt;
 use App\Models\Attendance;
 use App\Models\Certificate;
+use App\Models\Evaluation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -56,13 +58,31 @@ class ActivityController extends Controller
         // Increment view counter quietly
         $activity->increment('views_count');
 
-        // Check if currently logged in ASN has already recorded attendance or has certificate
+        // Check if currently logged in ASN has progress in this activity
         $hasAttended = false;
+        $pretestAttempt = null;
+        $posttestAttempt = null;
+        $hasEvaluated = false;
         $myCertificate = null;
 
         if (Auth::guard('asn')->check()) {
             $asnId = Auth::guard('asn')->id();
             $hasAttended = Attendance::where('asn_id', $asnId)
+                ->where('activity_id', $activity->id)
+                ->exists();
+
+            $pretestAttempt = AssessmentAttempt::where('asn_id', $asnId)
+                ->where('activity_id', $activity->id)
+                ->where('type', 'pretest')
+                ->first();
+
+            $posttestAttempt = AssessmentAttempt::where('asn_id', $asnId)
+                ->where('activity_id', $activity->id)
+                ->where('type', 'posttest')
+                ->latest()
+                ->first();
+
+            $hasEvaluated = Evaluation::where('asn_id', $asnId)
                 ->where('activity_id', $activity->id)
                 ->exists();
 
@@ -78,7 +98,15 @@ class ActivityController extends Controller
             ->take(3)
             ->get();
 
-        return view('public.show', compact('activity', 'otherActivities', 'hasAttended', 'myCertificate'));
+        return view('public.show', compact(
+            'activity',
+            'otherActivities',
+            'hasAttended',
+            'pretestAttempt',
+            'posttestAttempt',
+            'hasEvaluated',
+            'myCertificate'
+        ));
     }
 
     /**
@@ -150,21 +178,16 @@ class ActivityController extends Controller
                 return redirect()->away($activity->zoom_url);
 
             case 'evaluasi':
-                // Record evaluation attendance log
-                Attendance::create([
-                    'asn_id' => $asn->id,
-                    'activity_id' => $activity->id,
-                    'platform' => 'form_evaluasi',
-                    'attended_at' => now(),
-                    'ip_address' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
-                ]);
+                // Redirect to native in-system evaluation form
+                return redirect()->route('activities.evaluation', $activity->slug);
 
-                if (! $activity->google_form_url) {
-                    return back()->with('error', 'Formulir Post-Test & Evaluasi belum dibuka oleh panitia.');
-                }
+            case 'posttest':
+                // Redirect to native in-system post-test
+                return redirect()->route('activities.posttest', $activity->slug);
 
-                return redirect()->away($activity->google_form_url);
+            case 'presensi':
+                // 1-Click native presence
+                return redirect()->route('activities.presence', $activity->slug);
 
             case 'youtube':
                 if (! $activity->youtube_url) {
@@ -174,11 +197,8 @@ class ActivityController extends Controller
                 return redirect()->away($activity->youtube_url);
 
             case 'pretest':
-                if (! $activity->pretest_url) {
-                    return back()->with('error', 'Tautan Pre-Test belum dibuka oleh panitia.');
-                }
-
-                return redirect()->away($activity->pretest_url);
+                // Redirect to native in-system pre-test
+                return redirect()->route('activities.pretest', $activity->slug);
 
             case 'background':
                 if ($activity->virtual_background && Storage::disk('public')->exists($activity->virtual_background)) {

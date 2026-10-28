@@ -34,12 +34,20 @@ class Activity extends Model
         'certificate_url',
         'is_published',
         'status',
+        'passing_grade',
+        'exam_duration_minutes',
+        'pretest_enabled',
+        'posttest_enabled',
         'views_count',
     ];
 
     protected $casts = [
         'date' => 'date',
         'is_published' => 'boolean',
+        'passing_grade' => 'integer',
+        'exam_duration_minutes' => 'integer',
+        'pretest_enabled' => 'boolean',
+        'posttest_enabled' => 'boolean',
         'views_count' => 'integer',
     ];
 
@@ -130,5 +138,30 @@ class Activity extends Model
     public function certificates()
     {
         return $this->hasMany(Certificate::class);
+    }
+
+    public function questions()
+    {
+        return $this->hasMany(Question::class)->orderBy('order');
+    }
+
+    public function pretestQuestions()
+    {
+        return $this->hasMany(Question::class)->whereIn('type', ['pretest', 'both'])->orderBy('order');
+    }
+
+    public function posttestQuestions()
+    {
+        return $this->hasMany(Question::class)->whereIn('type', ['posttest', 'both'])->orderBy('order');
+    }
+
+    public function assessmentAttempts()
+    {
+        return $this->hasMany(AssessmentAttempt::class);
+    }
+
+    public function evaluations()
+    {
+        return $this->hasMany(Evaluation::class);
     }
 }

@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ParticipantController as AdminParticipantController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\AsnAuthController;
+use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\KeycloakController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,8 +23,17 @@ Route::get('/jadwal', [ActivityController::class, 'schedule'])->name('schedule')
 Route::get('/kegiatan/{slug}', [ActivityController::class, 'show'])->name('activities.show');
 Route::get('/kegiatan/{slug}/background', [ActivityController::class, 'downloadBackground'])->name('activities.background.download');
 
-// Unified Activity Feature Gate (All 7 Features protected behind ASN Login)
+// Unified Activity Feature Gate (All Features protected behind ASN Login)
 Route::get('/kegiatan/{slug}/akses/{type}', [ActivityController::class, 'access'])->name('activities.access');
+
+// Native In-System Assessments & Presensi Mandiri
+Route::match(['get', 'post'], '/kegiatan/{slug}/presensi', [AssessmentController::class, 'recordPresence'])->name('activities.presence');
+Route::get('/kegiatan/{slug}/pretest', [AssessmentController::class, 'showPretest'])->name('activities.pretest');
+Route::post('/kegiatan/{slug}/pretest', [AssessmentController::class, 'submitPretest'])->name('activities.pretest.submit');
+Route::get('/kegiatan/{slug}/posttest', [AssessmentController::class, 'showPosttest'])->name('activities.posttest');
+Route::post('/kegiatan/{slug}/posttest', [AssessmentController::class, 'submitPosttest'])->name('activities.posttest.submit');
+Route::get('/kegiatan/{slug}/evaluasi', [AssessmentController::class, 'showEvaluation'])->name('activities.evaluation');
+Route::post('/kegiatan/{slug}/evaluasi', [AssessmentController::class, 'submitEvaluation'])->name('activities.evaluation.submit');
 
 // Direct alias routes for backward compatibility
 Route::get('/kegiatan/{slug}/join-zoom', [ActivityController::class, 'joinZoom'])->name('activities.join.zoom');
