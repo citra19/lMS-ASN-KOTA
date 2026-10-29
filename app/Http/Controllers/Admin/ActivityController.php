@@ -21,7 +21,7 @@ class ActivityController extends Controller
         $status = $request->query('status');
         $publish = $request->query('publish');
 
-        $query = Activity::query();
+        $query = Activity::query()->withCount(['questions', 'attendances']);
 
         if ($search) {
             $query->search($search);

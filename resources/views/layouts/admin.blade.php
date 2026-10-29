@@ -59,10 +59,10 @@
                 @endif
             </a>
 
-            <a href="{{ route('admin.activities.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 {{ request()->routeIs('admin.activities.*') ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200/80 shadow-xs' : 'text-slate-600 hover:text-blue-700 hover:bg-slate-50' }}">
-                <svg class="w-4 h-4 shrink-0 {{ request()->routeIs('admin.activities.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+            <a href="{{ route('admin.activities.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 {{ request()->routeIs('admin.activities.*') || request()->routeIs('admin.questions.*') ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200/80 shadow-xs' : 'text-slate-600 hover:text-blue-700 hover:bg-slate-50' }}">
+                <svg class="w-4 h-4 shrink-0 {{ request()->routeIs('admin.activities.*') || request()->routeIs('admin.questions.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                 <span>Kelola Kegiatan</span>
-                @if(request()->routeIs('admin.activities.*'))
+                @if(request()->routeIs('admin.activities.*') || request()->routeIs('admin.questions.*'))
                     <span class="ml-auto w-1.5 h-1.5 rounded-full bg-blue-600"></span>
                 @endif
             </a>

@@ -87,11 +87,13 @@
                                 
                                 <!-- Tautan Indicators -->
                                 <div class="flex items-center gap-2 mt-1.5 text-[10px]">
-                                    <span class="font-semibold text-slate-400">Tautan Aktif:</span>
+                                    <span class="font-semibold text-slate-400">Tautan & Modul:</span>
+                                    <a href="{{ route('admin.questions.index', $item->id) }}" class="px-1.5 py-0.2 rounded font-bold hover:underline {{ ($item->questions_count ?? 0) > 0 ? 'bg-indigo-100 text-indigo-800' : 'bg-amber-100 text-amber-800' }}" title="Klik untuk mengelola Bank Soal">
+                                        Soal: {{ $item->questions_count ?? 0 }} Butir
+                                    </a>
                                     <span class="px-1.5 py-0.2 rounded {{ $item->youtube_url ? 'bg-rose-100 text-rose-800' : 'bg-slate-100 text-slate-400' }}">YouTube</span>
                                     <span class="px-1.5 py-0.2 rounded {{ $item->zoom_url ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-400' }}">Zoom</span>
-                                    <span class="px-1.5 py-0.2 rounded {{ $item->pretest_url ? 'bg-purple-100 text-purple-800' : 'bg-slate-100 text-slate-400' }}">Pre-Test</span>
-                                    <span class="px-1.5 py-0.2 rounded {{ $item->google_form_url ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-400' }}">Google Form</span>
+                                    <span class="px-1.5 py-0.2 rounded {{ $item->google_form_url ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-400' }}">G-Form</span>
                                     <span class="px-1.5 py-0.2 rounded {{ $item->certificate_url ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-400' }}">Sertifikat</span>
                                 </div>
                             </td>
@@ -123,6 +125,10 @@
                             </td>
                             <td class="px-5 py-4 text-right whitespace-nowrap font-medium">
                                 <div class="flex items-center justify-end gap-2">
+                                    <a href="{{ route('admin.questions.index', $item->id) }}" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors text-xs font-bold" title="Kelola Bank Soal Kegiatan">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                        <span>Soal ({{ $item->questions_count ?? 0 }})</span>
+                                    </a>
                                     <a href="{{ route('activities.show', $item->slug) }}" target="_blank" class="p-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100" title="Buka Halaman Peserta">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                                     </a>

@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\CertificateController as AdminCertificateController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ParticipantController as AdminParticipantController;
+use App\Http\Controllers\Admin\QuestionController as AdminQuestionController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\AsnAuthController;
 use App\Http\Controllers\AssessmentController;
@@ -89,6 +90,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Activity Management
         Route::resource('kegiatan', AdminActivityController::class)->names('activities');
         Route::patch('kegiatan/{activity}/toggle-publish', [AdminActivityController::class, 'togglePublish'])->name('activities.toggle-publish');
+
+        // Bank Soal (Assessment Questions) Management per Activity
+        Route::get('kegiatan/{activity}/soal', [AdminQuestionController::class, 'index'])->name('questions.index');
+        Route::get('kegiatan/{activity}/soal/create', [AdminQuestionController::class, 'create'])->name('questions.create');
+        Route::post('kegiatan/{activity}/soal', [AdminQuestionController::class, 'store'])->name('questions.store');
+        Route::get('kegiatan/{activity}/soal/{question}/edit', [AdminQuestionController::class, 'edit'])->name('questions.edit');
+        Route::put('kegiatan/{activity}/soal/{question}', [AdminQuestionController::class, 'update'])->name('questions.update');
+        Route::delete('kegiatan/{activity}/soal/{question}', [AdminQuestionController::class, 'destroy'])->name('questions.destroy');
+        Route::post('kegiatan/{activity}/soal/{question}/duplicate', [AdminQuestionController::class, 'duplicate'])->name('questions.duplicate');
 
         // Participant Management (Data Peserta ASN)
         Route::get('/peserta', [AdminParticipantController::class, 'index'])->name('participants.index');

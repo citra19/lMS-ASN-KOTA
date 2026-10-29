@@ -125,9 +125,29 @@
                     </div>
                 </div>
 
-                <!-- Pre-Test -->
+                <!-- Modul Native Bank Soal Asesmen LMS -->
+                <div class="p-5 bg-gradient-to-r from-blue-50 via-indigo-50/50 to-transparent rounded-2xl border border-blue-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-4 rounded bg-blue-600"></span>
+                            <span class="text-sm font-extrabold text-slate-900">Bank Soal & Asesmen Digital (Native)</span>
+                            <span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-black uppercase">
+                                {{ $activity->questions()->count() }} Butir Soal
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed max-w-xl">
+                            Kelola butir soal pilihan ganda (Pre-Test & Post-Test) langsung di dalam sistem LMS untuk koreksi nilai otomatis dan penerbitan sertifikat.
+                        </p>
+                    </div>
+                    <a href="{{ route('admin.questions.index', $activity->id) }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-extrabold shadow-sm transition-all hover:scale-[1.02] shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <span>Buka Bank Soal Kegiatan &rarr;</span>
+                    </a>
+                </div>
+
+                <!-- Pre-Test URL Eksternal (Opsional jika memakai Google Form) -->
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Link Pre-Test</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Link Pre-Test Eksternal (Google Form - Opsional)</label>
                     <input type="url" name="pretest_url" value="{{ old('pretest_url', $activity->pretest_url) }}" placeholder="https://forms.gle/..." class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
 
