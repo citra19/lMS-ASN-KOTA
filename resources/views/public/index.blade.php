@@ -406,9 +406,9 @@
                 <div class="w-10 h-10 rounded-xl bg-amber-600 text-white font-extrabold flex items-center justify-center text-sm shadow-md mb-4">
                     06
                 </div>
-                <h3 class="text-base font-bold text-slate-900 mb-2">Satu Form Terpadu</h3>
+                <h3 class="text-base font-bold text-slate-900 mb-2">Post-Test & Evaluasi Mandiri</h3>
                 <p class="text-xs text-slate-600 leading-relaxed">
-                    Mengisi 1 (satu) Google Form gabungan di akhir acara yang memuat identitas ASN, post-test, absensi kehadiran, dan evaluasi.
+                    Mengerjakan Post-Test evaluasi pemahaman materi langsung di sistem CBT LMS dan mengisi kuesioner evaluasi penyelenggaraan.
                 </p>
             </div>
 
@@ -417,9 +417,9 @@
                 <div class="w-10 h-10 rounded-xl bg-teal-600 text-white font-extrabold flex items-center justify-center text-sm shadow-md mb-4">
                     07
                 </div>
-                <h3 class="text-base font-bold text-slate-900 mb-2">Akses E-Sertifikat</h3>
+                <h3 class="text-base font-bold text-slate-900 mb-2">E-Sertifikat Terbit Otomatis</h3>
                 <p class="text-xs text-slate-600 leading-relaxed">
-                    Setelah diverifikasi panitia BKPSDM, buka tautan sertifikat digital kegiatan yang tercatat resmi pada portofolio Anda.
+                    E-Sertifikat digital resmi ber-Barcode dan nilai Jam Pelajaran (JP) otomatis terbit seketika 24/7 dan tersimpan di portofolio Anda.
                 </p>
             </div>
 

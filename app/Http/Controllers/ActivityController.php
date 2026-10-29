@@ -93,6 +93,22 @@ class ActivityController extends Controller
                 ->first();
         }
 
+        // Calculate LMS Learning Journey Progress (4 Core Milestones)
+        $completedSteps = 0;
+        if ($hasAttended) {
+            $completedSteps++;
+        }
+        if ($pretestAttempt) {
+            $completedSteps++;
+        }
+        if ($posttestAttempt && $posttestAttempt->is_passed) {
+            $completedSteps++;
+        }
+        if ($hasEvaluated) {
+            $completedSteps++;
+        }
+        $learningProgress = (int) round(($completedSteps / 4) * 100);
+
         // Other activities for recommendations
         $otherActivities = Activity::published()
             ->where('id', '!=', $activity->id)
@@ -107,7 +123,9 @@ class ActivityController extends Controller
             'pretestAttempt',
             'posttestAttempt',
             'hasEvaluated',
-            'myCertificate'
+            'myCertificate',
+            'learningProgress',
+            'completedSteps'
         ));
     }
 
@@ -140,12 +158,14 @@ class ActivityController extends Controller
 
         $labels = [
             'youtube' => 'Siaran Live YouTube',
-            'zoom' => 'Zoom Meeting',
-            'pretest' => 'Pengerjaan Pre-Test',
-            'background' => 'Virtual Background',
-            'evaluasi' => 'Formulir Post-Test, Absensi & Evaluasi',
-            'materi' => 'Bahan Pembelajaran',
-            'sertifikat' => 'E-Sertifikat Digital',
+            'zoom' => 'Webinar Zoom Meeting',
+            'materi' => 'Bahan & Modul Pembelajaran',
+            'presensi' => 'Presensi Kehadiran Pembelajaran',
+            'pretest' => 'Pre-Test Diagnostik Mandiri',
+            'posttest' => 'Post-Test Evaluasi Kelulusan',
+            'evaluasi' => 'Formulir Evaluasi & Umpan Balik Sesi',
+            'sertifikat' => 'E-Sertifikat Pengembangan Kompetensi',
+            'background' => 'Virtual Background Kegiatan',
         ];
 
         $featureLabel = $labels[$type] ?? 'Layanan Pembelajaran';
@@ -164,14 +184,18 @@ class ActivityController extends Controller
         switch ($type) {
             case 'zoom':
                 // Record Zoom attendance log
-                Attendance::create([
-                    'asn_id' => $asn->id,
-                    'activity_id' => $activity->id,
-                    'platform' => 'zoom',
-                    'attended_at' => now(),
-                    'ip_address' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
-                ]);
+                Attendance::updateOrCreate(
+                    [
+                        'asn_id' => $asn->id,
+                        'activity_id' => $activity->id,
+                    ],
+                    [
+                        'platform' => 'zoom',
+                        'attended_at' => now(),
+                        'ip_address' => $request->ip(),
+                        'user_agent' => $request->userAgent(),
+                    ]
+                );
 
                 if (! $activity->zoom_url) {
                     return back()->with('error', 'Tautan Zoom Meeting belum diset oleh panitia.');
@@ -227,18 +251,18 @@ class ActivityController extends Controller
                 return back()->with('error', 'Bahan pembelajaran sedang dipersiapkan oleh narasumber/panitia.');
 
             case 'sertifikat':
+                // Check if certificate was issued in certificates table
+                $cert = Certificate::where('asn_id', $asn->id)->where('activity_id', $activity->id)->first();
+                if ($cert) {
+                    return redirect()->route('certificates.show', $cert->id);
+                }
+
                 if ($activity->certificate_url) {
                     return redirect()->away($activity->certificate_url);
                 }
 
-                // Check if certificate was issued in certificates table
-                $cert = Certificate::where('asn_id', $asn->id)->where('activity_id', $activity->id)->first();
-                if ($cert) {
-                    return redirect()->route('my.certificates')
-                        ->with('success', 'E-Sertifikat Anda telah terdaftar dengan nomor: '.$cert->certificate_number);
-                }
-
-                return back()->with('error', 'E-Sertifikat untuk sesi kegiatan ini belum diterbitkan oleh BKPSDM.');
+                return redirect()->route('activities.show', $activity->slug)
+                    ->with('warning', 'E-Sertifikat belum dapat diakses. Lengkapi 4 tahapan kelulusan LMS: Presensi, Pre-Test, Lulus Post-Test (KKM '.$activity->passing_grade.'), dan Pengisian Evaluasi.');
 
             default:
                 return back()->with('error', 'Layanan tidak dikenali.');
